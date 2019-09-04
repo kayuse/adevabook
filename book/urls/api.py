@@ -16,7 +16,10 @@ Including another URLconf
 
 from django.urls import path, include
 from book import views
+from rest_framework import routers, serializers, viewsets
 
+router = routers.DefaultRouter(trailing_slash=False)
+router.register(r'', views.BookApi)
 urlpatterns = [
-    path('', views.BookApi.as_view())
+    path('', include(router.urls))
 ]

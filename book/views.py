@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework.views import APIView
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.http import Http404
 from .serializers.book_serializer import BookSerializer, Book
@@ -8,24 +8,49 @@ from .serializers.book_serializer import BookSerializer, Book
 # Create your views here.
 
 
-class BookApi(APIView):
+class BookApi(viewsets.ModelViewSet):
+    queryset = Book.objects.all()
     serializer_class = BookSerializer
 
-    def get_object(self, pk):
-        try:
-            return Book.objects.get(pk=pk)
-        except Book.DoesNotExist:
-            raise Http404
+    def retrieve(self, request, pk, *args, **kwargs):
+        books = Book.objects
+        book = books.filter(id=pk).first()
+        if book is None:
+            return Response(self.build_response([], 'Not found', status.HTTP_404_NOT_FOUND),
+                            status=status.HTTP_404_NOT_FOUND)
 
-    def get(self, request):
+        serializer = BookSerializer(book)
+        return Response(self.build_response(serializer.data, 'success', status.HTTP_200_OK))
+
+    def list(self, request, *args, **kwargs):
         books = Book.objects
         serializer = BookSerializer(books, many=True)
-        return Response(serializer.data)
 
-    def post(self, request):
+        return Response(self.build_response(serializer.data, 'success', status.HTTP_200_OK))
+
+    def create(self, request, *args, **kwargs):
         book_serializer = BookSerializer(data=request.data)
 
         if book_serializer.is_valid(raise_exception=True):
             validated_data = book_serializer.validated_data
-            book_serializer.create(validated_data)
-            return Response({'success': request.data})
+            result = book_serializer.create(validated_data)
+            data = {"book": result.data}
+            return Response(self.build_response(data, 'success', status.HTTP_201_CREATED))
+
+    def patch(self, request, pk):
+        return Response({'success': request.data})
+
+    def update(self, request, pk, *args, **kwargs):
+        # print(Book.objects.all()[0].authors.name)
+
+        serializer = BookSerializer(Book.objects, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            book_update = serializer.update(Book.objects.get(id=pk), serializer.validated_data)
+            data = {"book": book_update.data}
+            return Response(self.build_response(data, 'success', status.HTTP_201_CREATED))
+
+    @staticmethod
+    def build_response(data, status, code):
+        return {"status_code": code,
+                "status": status,
+                "data": data}

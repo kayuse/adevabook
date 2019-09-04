@@ -18,4 +18,4 @@ class Author(models.Model):
     book = models.ForeignKey(Book, related_name="authors", on_delete=models.CASCADE)
 
     def __str__(self):
-        return ""
+        return self.name
