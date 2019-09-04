@@ -19,7 +19,7 @@ from book import views
 from rest_framework import routers, serializers, viewsets
 
 router = routers.DefaultRouter(trailing_slash=False)
-router.register(r'', views.BookApi)
+router.register(r'books', views.BookApi)
 urlpatterns = [
     path('', include(router.urls))
 ]

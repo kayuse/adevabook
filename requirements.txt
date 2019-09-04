@@ -3,16 +3,12 @@ chardet==3.0.4
 coreapi==2.3.3
 coreschema==0.0.4
 Django==2.2.4
-django-bootstrap-breadcrumbs==0.9.1
 django-cors-headers==3.1.0
-django-countries-flavor==0.1.1
-django-crispy-forms==1.7.2
-django-multiselectfield==0.1.8
--e git+https://github.com/kingnonso/django-paystack.git@ad4a286b873d28699983d3c43ab07a1ae83064bf#egg=django_paystack
 django-rest-swagger==2.2.0
 django-safedelete==0.5.1
 django-taggit==1.1.0
 djangorestframework==3.10.2
+django-test
 future==0.17.1
 idna==2.8
 itypes==1.1.0
@@ -30,3 +26,4 @@ sorl-thumbnail==12.5.0
 sqlparse==0.3.0
 uritemplate==3.0.0
 urllib3==1.25.3
+

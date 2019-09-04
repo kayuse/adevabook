@@ -20,25 +20,25 @@ class BookApi(viewsets.ModelViewSet):
                             status=status.HTTP_404_NOT_FOUND)
 
         serializer = BookSerializer(book)
-        return Response(self.build_response(serializer.data, 'success', status.HTTP_200_OK))
+        return Response(self.build_response(serializer.data, 'success', status.HTTP_200_OK), status.HTTP_200_OK)
 
     def list(self, request, *args, **kwargs):
         books = Book.objects
         serializer = BookSerializer(books, many=True)
 
-        return Response(self.build_response(serializer.data, 'success', status.HTTP_200_OK))
+        return Response(self.build_response(serializer.data, 'success', status.HTTP_200_OK)
+                        , status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
+        # print(request.data['authors'][0])
         book_serializer = BookSerializer(data=request.data)
 
         if book_serializer.is_valid(raise_exception=True):
             validated_data = book_serializer.validated_data
             result = book_serializer.create(validated_data)
             data = {"book": result.data}
-            return Response(self.build_response(data, 'success', status.HTTP_201_CREATED))
-
-    def patch(self, request, pk):
-        return Response({'success': request.data})
+            return Response(self.build_response(data, 'success', status.HTTP_201_CREATED)
+                            , status.HTTP_201_CREATED)
 
     def update(self, request, pk, *args, **kwargs):
         # print(Book.objects.all()[0].authors.name)
@@ -47,7 +47,7 @@ class BookApi(viewsets.ModelViewSet):
         if serializer.is_valid(raise_exception=True):
             book_update = serializer.update(Book.objects.get(id=pk), serializer.validated_data)
             data = {"book": book_update.data}
-            return Response(self.build_response(data, 'success', status.HTTP_201_CREATED))
+            return Response(self.build_response(data, 'success', status.HTTP_201_CREATED), status.HTTP_201_CREATED)
 
     def destroy(self, request, pk, *args, **kwargs):
         books = Book.objects
@@ -55,10 +55,11 @@ class BookApi(viewsets.ModelViewSet):
         if book is None:
             return Response(self.build_response([], 'Not found', status.HTTP_404_NOT_FOUND),
                             status=status.HTTP_404_NOT_FOUND)
-        
+
         book.delete()
         return Response(self.build_response([], 'success', status.HTTP_204_NO_CONTENT,
-                                            "The book My First Book was deleted successfully"))
+                                            "The book My First Book was deleted successfully"),
+                        status.HTTP_204_NO_CONTENT)
 
     @staticmethod
     def build_response(data, status, code, message=None):
