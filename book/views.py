@@ -49,8 +49,22 @@ class BookApi(viewsets.ModelViewSet):
             data = {"book": book_update.data}
             return Response(self.build_response(data, 'success', status.HTTP_201_CREATED))
 
+    def destroy(self, request, pk, *args, **kwargs):
+        books = Book.objects
+        book = books.filter(id=pk).first()
+        if book is None:
+            return Response(self.build_response([], 'Not found', status.HTTP_404_NOT_FOUND),
+                            status=status.HTTP_404_NOT_FOUND)
+        
+        book.delete()
+        return Response(self.build_response([], 'success', status.HTTP_204_NO_CONTENT,
+                                            "The book My First Book was deleted successfully"))
+
     @staticmethod
-    def build_response(data, status, code):
-        return {"status_code": code,
-                "status": status,
-                "data": data}
+    def build_response(data, status, code, message=None):
+        response = {"status_code": code,
+                    "status": status,
+                    "data": data}
+        if message is not None:
+            response['message'] = message
+        return response
