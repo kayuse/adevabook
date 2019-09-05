@@ -13,12 +13,10 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
+
 from django.urls import path, include
+from ..views import ExternalBookApiView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('externalbook.urls.api')),
-    path('api/v1/', include('book.urls.api')),
-
+    path('external-books', ExternalBookApiView.as_view(), name='external-books-list')
 ]
